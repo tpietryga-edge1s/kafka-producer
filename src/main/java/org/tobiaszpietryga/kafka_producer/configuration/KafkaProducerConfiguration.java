@@ -13,6 +13,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.tobiaszpietryga.kafka_producer.model.Order;
 
 @Configuration
 public class KafkaProducerConfiguration {
@@ -21,7 +22,7 @@ public class KafkaProducerConfiguration {
 
 
 	@Bean
-	public ProducerFactory<String, String> producerFactory() {
+	public ProducerFactory<Long, Order> producerFactory() {
 		Map<String, Object> configProps = new HashMap<>();
 		configProps.put(
 				ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
@@ -36,7 +37,7 @@ public class KafkaProducerConfiguration {
 	}
 
 	@Bean
-	public KafkaTemplate<String, String> kafkaTemplate() {
+	public KafkaTemplate<Long, Order> kafkaTemplate() {
 		return new KafkaTemplate<>(producerFactory());
 	}
 }

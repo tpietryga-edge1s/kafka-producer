@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tobiaszpietryga.kafka_producer.model.Order;
+import org.tobiaszpietryga.kafka_producer.model.Status;
 import org.tobiaszpietryga.kafka_producer.sevice.OrderService;
 
 @RestController
@@ -18,12 +19,10 @@ import org.tobiaszpietryga.kafka_producer.sevice.OrderService;
 public class OrderController {
 	Logger logger = LoggerFactory.getLogger(OrderController.class);
 	private final OrderService orderService;
-	private final AtomicLong idGenerator = new AtomicLong();
 
 	@PostMapping
 	public void makeOrder(@RequestBody String orderName) {
 		logger.info("Received an orderName {}", orderName);
-		Order newOrder = Order.builder().id(idGenerator.incrementAndGet()).name(orderName).build();
-		orderService.sendOrder(newOrder);
+		orderService.sendOrder(orderName);
 	}
 }

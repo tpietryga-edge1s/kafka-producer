@@ -1,10 +1,14 @@
 package org.tobiaszpietryga.kafka_producer.model;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.Value;
 
-@Data
+
+@Builder
+@Value
 public class Order {
-	private Long id;
-	private String name;
-	private Status status;
+	Long id;
+	String name;
+	Status status;
 }

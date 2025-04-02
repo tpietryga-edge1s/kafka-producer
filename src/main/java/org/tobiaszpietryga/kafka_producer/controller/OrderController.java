@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tobiaszpietryga.kafka_producer.sevice.OrderService;
+import org.tobiaszpietryga.order.common.model.Order;
 
 @RestController
 @RequestMapping("orders")
@@ -17,8 +18,8 @@ public class OrderController {
 	private final OrderService orderService;
 
 	@PostMapping
-	public void makeOrder(@RequestBody String orderName) {
-		logger.info("Received an orderName {}", orderName);
-		orderService.sendOrder(orderName);
+	public void makeOrder(@RequestBody Order order) {
+		logger.info("Received an orderName {}", order);
+		orderService.sendOrder(order);
 	}
 }

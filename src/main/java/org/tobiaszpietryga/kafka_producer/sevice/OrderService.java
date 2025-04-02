@@ -19,8 +19,8 @@ public class OrderService {
 
 	@Value("${orders.topic.name}")
 	private String ordersTopicName;
-	public void sendOrder(String orderName) {
-		Order newOrder = Order.builder().id(idGenerator.incrementAndGet()).name(orderName).status(Status.NEW).build();
-		kafkaTemplate.send(topicName, newOrder.getId(), newOrder);
+	public void sendOrder(Order order) {
+		order.setId(idGenerator.incrementAndGet());
+		kafkaTemplate.send(topicName, order.getId(), order);
 	}
 }

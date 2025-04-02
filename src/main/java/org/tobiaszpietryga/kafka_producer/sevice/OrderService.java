@@ -14,11 +14,13 @@ import org.tobiaszpietryga.order.common.model.Status;
 public class OrderService {
 	private final KafkaTemplate<Long, Order> kafkaTemplate;
 	private final AtomicLong idGenerator = new AtomicLong();
+	@Value("${orders.topic.name}")
+	private String topicName;
 
 	@Value("${orders.topic.name}")
 	private String ordersTopicName;
 	public void sendOrder(String orderName) {
 		Order newOrder = Order.builder().id(idGenerator.incrementAndGet()).name(orderName).status(Status.NEW).build();
-		kafkaTemplate.send("orders", newOrder.getId(), newOrder);
+		kafkaTemplate.send(topicName, newOrder.getId(), newOrder);
 	}
 }

@@ -2,13 +2,12 @@ package org.tobiaszpietryga.kafka_producer.sevice;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.tobiaszpietryga.kafka_producer.model.Order;
-import org.tobiaszpietryga.kafka_producer.model.Status;
+import org.tobiaszpietryga.order.common.model.Order;
+import org.tobiaszpietryga.order.common.model.Status;
 
 @Service
 @RequiredArgsConstructor

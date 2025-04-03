@@ -38,26 +38,26 @@ public class ProcessingListener {
 
 	@KafkaListener(id = "order-service-payment-listener", topics = "${payment-orders.topic.name}", groupId = "order-service-payment-listener")
 	public void processPayment(Order paymentOrder) {
-		log.info("Received: {}", paymentOrder);
+		log.info("Payment: Received: {}", paymentOrder);
 		OrderProcessingStatus orderProcessingStatus = orderStatus.computeIfAbsent(paymentOrder.getId(), id -> new OrderProcessingStatus());
 		if (paymentOrder.getStatus().equals(Status.PARTIALLY_REJECTED)) {
 			if (!orderProcessingStatus.getStockStatus().equals(ConfirmationStatus.UNKNOWN)) {
 				finalizeProcessing(paymentOrder, Status.ROLLBACK);
-				log.info("ROLLBACK: {}", paymentOrder);
+				log.info("Payment: ROLLBACK: {}", paymentOrder);
 			} else {
 				orderProcessingStatus.setPaymentStatus(ConfirmationStatus.REJECTED);
-				log.info("Stored: {}, {}", paymentOrder, orderProcessingStatus);
+				log.info("Payment: Stored: {}, {}", paymentOrder, orderProcessingStatus);
 			}
 		} else if (paymentOrder.getStatus().equals(Status.PARTIALLY_CONFIRMED)) {
 			if (orderProcessingStatus.getStockStatus().equals(ConfirmationStatus.CONFIRMED)) {
 				finalizeProcessing(paymentOrder, Status.CONFIRMED);
-				log.info("CONFIRMED: {}", paymentOrder);
+				log.info("Payment: CONFIRMED: {}", paymentOrder);
 			} else if (orderProcessingStatus.getStockStatus().equals(ConfirmationStatus.REJECTED)) {
 				finalizeProcessing(paymentOrder, Status.ROLLBACK);
-				log.info("ROLLBACK: {}", paymentOrder);
+				log.info("Payment: ROLLBACK: {}", paymentOrder);
 			} else {
 				orderProcessingStatus.setPaymentStatus(ConfirmationStatus.CONFIRMED);
-				log.info("Stored: {}, {}", paymentOrder, orderProcessingStatus);
+				log.info("Payment: Stored: {}", orderProcessingStatus);
 			}
 		} else {
 			throw new IllegalArgumentException();
@@ -66,26 +66,26 @@ public class ProcessingListener {
 
 	@KafkaListener(id = "order-service-stock-listener", topics = "${stock-orders.topic.name}", groupId = "order-service-stock-listener")
 	public void processStock(Order stockOrder) {
-		log.info("Received: {}", stockOrder);
+		log.info("Stock: Received: {}", stockOrder);
 		OrderProcessingStatus orderProcessingStatus = orderStatus.computeIfAbsent(stockOrder.getId(), id -> new OrderProcessingStatus());
 		if (stockOrder.getStatus().equals(Status.PARTIALLY_REJECTED)) {
 			if (!orderProcessingStatus.getPaymentStatus().equals(ConfirmationStatus.UNKNOWN)) {
 				finalizeProcessing(stockOrder, Status.ROLLBACK);
-				log.info("ROLLBACK: {}", stockOrder);
+				log.info("Stock: ROLLBACK: {}", stockOrder);
 			} else {
 				orderProcessingStatus.setStockStatus(ConfirmationStatus.REJECTED);
-				log.info("Stored: {}, {}", stockOrder, orderProcessingStatus);
+				log.info("Stock: Stored: {}, {}", stockOrder, orderProcessingStatus);
 			}
 		} else if (stockOrder.getStatus().equals(Status.PARTIALLY_CONFIRMED)) {
 			if (orderProcessingStatus.getPaymentStatus().equals(ConfirmationStatus.CONFIRMED)) {
 				finalizeProcessing(stockOrder, Status.CONFIRMED);
-				log.info("CONFIRMED: {}", stockOrder);
+				log.info("Stock: CONFIRMED: {}", stockOrder);
 			} else if (orderProcessingStatus.getPaymentStatus().equals(ConfirmationStatus.REJECTED)) {
 				finalizeProcessing(stockOrder, Status.ROLLBACK);
-				log.info("ROLLBACK: {}", stockOrder);
+				log.info("Stock: ROLLBACK: {}", stockOrder);
 			} else {
 				orderProcessingStatus.setStockStatus(ConfirmationStatus.CONFIRMED);
-				log.info("Stored: {}, {}", stockOrder, orderProcessingStatus);
+				log.info("Stock: Stored: {}, {}", stockOrder, orderProcessingStatus);
 			}
 		} else {
 			throw new IllegalArgumentException();

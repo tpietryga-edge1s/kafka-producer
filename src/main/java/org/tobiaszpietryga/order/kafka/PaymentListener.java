@@ -40,7 +40,7 @@ public class PaymentListener {
 	public void onEvent(Order paymentOrder) {
 		log.info("Received: {}", paymentOrder);
 		OrderProcessingStatus orderProcessingStatus = orderStatus.computeIfAbsent(paymentOrder.getId(), id -> new OrderProcessingStatus());
-		if (paymentOrder.getStatus().equals(Status.REJECTED)) {
+		if (paymentOrder.getStatus().equals(Status.PARTIALLY_REJECTED)) {
 			if (!orderProcessingStatus.getStockStatus().equals(ConfirmationStatus.UNKNOWN)) {
 				finalizeProcessing(paymentOrder, Status.ROLLBACK);
 				log.info("Finalized: {}", paymentOrder);
@@ -48,7 +48,7 @@ public class PaymentListener {
 				orderProcessingStatus.setPaymentStatus(ConfirmationStatus.REJECTED);
 				log.info("Stored: {}, {}", paymentOrder, orderProcessingStatus);
 			}
-		} else if (paymentOrder.getStatus().equals(Status.CONFIRMED)) {
+		} else if (paymentOrder.getStatus().equals(Status.PARTIALLY_CONFIRMED)) {
 			if (orderProcessingStatus.getStockStatus().equals(ConfirmationStatus.CONFIRMED)) {
 				finalizeProcessing(paymentOrder, Status.CONFIRMED);
 				log.info("Finalized: {}", paymentOrder);

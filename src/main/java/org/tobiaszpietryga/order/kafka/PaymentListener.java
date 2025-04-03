@@ -36,8 +36,7 @@ public class PaymentListener {
 
 	private Map<Long, OrderProcessingStatus> orderStatus = new ConcurrentHashMap<>();
 
-	private
-	@KafkaListener(id = "paymentOrder-service-payment-listener", topics = "${payment-orders.topic.name}", groupId = "paymentOrder-service-payment-listener")
+	@KafkaListener(id = "order-service-payment-listener", topics = "${payment-orders.topic.name}", groupId = "order-service-payment-listener")
 	public void onEvent(Order paymentOrder) {
 		log.info("Received: {}", paymentOrder);
 		OrderProcessingStatus orderProcessingStatus = orderStatus.computeIfAbsent(paymentOrder.getId(), id -> new OrderProcessingStatus());

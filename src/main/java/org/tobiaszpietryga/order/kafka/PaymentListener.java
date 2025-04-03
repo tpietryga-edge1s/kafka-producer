@@ -43,16 +43,21 @@ public class PaymentListener {
 		if (paymentOrder.getStatus().equals(Status.REJECTED)) {
 			if (!orderProcessingStatus.getStockStatus().equals(ConfirmationStatus.UNKNOWN)) {
 				finalizeProcessing(paymentOrder, Status.ROLLBACK);
+				log.info("Finalized: {}", paymentOrder);
 			} else {
 				orderProcessingStatus.setPaymentStatus(ConfirmationStatus.REJECTED);
+				log.info("Stored: {}, {}", paymentOrder, orderProcessingStatus);
 			}
 		} else if (paymentOrder.getStatus().equals(Status.CONFIRMED)) {
 			if (orderProcessingStatus.getStockStatus().equals(ConfirmationStatus.CONFIRMED)) {
 				finalizeProcessing(paymentOrder, Status.CONFIRMED);
+				log.info("Finalized: {}", paymentOrder);
 			} else if (orderProcessingStatus.getStockStatus().equals(ConfirmationStatus.REJECTED)) {
 				finalizeProcessing(paymentOrder, Status.REJECTED);
+				log.info("Finalized: {}", paymentOrder);
 			} else {
 				orderProcessingStatus.setPaymentStatus(ConfirmationStatus.CONFIRMED);
+				log.info("Stored: {}, {}", paymentOrder, orderProcessingStatus);
 			}
 		} else {
 			throw new IllegalArgumentException();

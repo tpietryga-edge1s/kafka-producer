@@ -1,4 +1,4 @@
-package org.tobiaszpietryga.kafka_producer.controller;
+package org.tobiaszpietryga.order.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tobiaszpietryga.kafka_producer.sevice.OrderService;
+import org.tobiaszpietryga.order.sevice.OrderService;
 import org.tobiaszpietryga.order.common.model.Order;
 
 @RestController

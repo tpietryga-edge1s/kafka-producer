@@ -1,4 +1,4 @@
-package org.tobiaszpietryga.kafka_producer;
+package org.tobiaszpietryga.order;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

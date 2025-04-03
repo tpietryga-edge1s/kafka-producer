@@ -1,4 +1,4 @@
-package org.tobiaszpietryga.kafka_producer.sevice;
+package org.tobiaszpietryga.order.sevice;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.tobiaszpietryga.order.common.model.Order;
-import org.tobiaszpietryga.order.common.model.Status;
 
 @Service
 @RequiredArgsConstructor
@@ -17,8 +16,6 @@ public class OrderService {
 	@Value("${orders.topic.name}")
 	private String topicName;
 
-	@Value("${orders.topic.name}")
-	private String ordersTopicName;
 	public void sendOrder(Order order) {
 		order.setId(idGenerator.incrementAndGet());
 		kafkaTemplate.send(topicName, order.getId(), order);

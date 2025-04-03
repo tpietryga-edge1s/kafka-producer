@@ -1,4 +1,4 @@
-package org.tobiaszpietryga.kafka_producer.configuration;
+package org.tobiaszpietryga.order.configuration;
 
 import java.util.HashMap;
 import java.util.Map;

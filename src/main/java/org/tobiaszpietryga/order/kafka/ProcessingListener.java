@@ -17,7 +17,7 @@ import org.tobiaszpietryga.order.common.model.Status;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class PaymentListener {
+public class ProcessingListener {
 	private final KafkaTemplate<Long, Order> kafkaTemplate;
 
 	@Data
@@ -37,13 +37,13 @@ public class PaymentListener {
 	private Map<Long, OrderProcessingStatus> orderStatus = new ConcurrentHashMap<>();
 
 	@KafkaListener(id = "order-service-payment-listener", topics = "${payment-orders.topic.name}", groupId = "order-service-payment-listener")
-	public void onEvent(Order paymentOrder) {
+	public void processPayment(Order paymentOrder) {
 		log.info("Received: {}", paymentOrder);
 		OrderProcessingStatus orderProcessingStatus = orderStatus.computeIfAbsent(paymentOrder.getId(), id -> new OrderProcessingStatus());
 		if (paymentOrder.getStatus().equals(Status.PARTIALLY_REJECTED)) {
 			if (!orderProcessingStatus.getStockStatus().equals(ConfirmationStatus.UNKNOWN)) {
 				finalizeProcessing(paymentOrder, Status.ROLLBACK);
-				log.info("Finalized: {}", paymentOrder);
+				log.info("ROLLBACK: {}", paymentOrder);
 			} else {
 				orderProcessingStatus.setPaymentStatus(ConfirmationStatus.REJECTED);
 				log.info("Stored: {}, {}", paymentOrder, orderProcessingStatus);
@@ -51,13 +51,41 @@ public class PaymentListener {
 		} else if (paymentOrder.getStatus().equals(Status.PARTIALLY_CONFIRMED)) {
 			if (orderProcessingStatus.getStockStatus().equals(ConfirmationStatus.CONFIRMED)) {
 				finalizeProcessing(paymentOrder, Status.CONFIRMED);
-				log.info("Finalized: {}", paymentOrder);
+				log.info("CONFIRMED: {}", paymentOrder);
 			} else if (orderProcessingStatus.getStockStatus().equals(ConfirmationStatus.REJECTED)) {
 				finalizeProcessing(paymentOrder, Status.REJECTED);
-				log.info("Finalized: {}", paymentOrder);
+				log.info("ROLLBACK: {}", paymentOrder);
 			} else {
 				orderProcessingStatus.setPaymentStatus(ConfirmationStatus.CONFIRMED);
 				log.info("Stored: {}, {}", paymentOrder, orderProcessingStatus);
+			}
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+
+	@KafkaListener(id = "order-service-stock-listener", topics = "${stock-orders.topic.name}", groupId = "order-service-stock-listener")
+	public void processStock(Order stockOrder) {
+		log.info("Received: {}", stockOrder);
+		OrderProcessingStatus orderProcessingStatus = orderStatus.computeIfAbsent(stockOrder.getId(), id -> new OrderProcessingStatus());
+		if (stockOrder.getStatus().equals(Status.PARTIALLY_REJECTED)) {
+			if (!orderProcessingStatus.getPaymentStatus().equals(ConfirmationStatus.UNKNOWN)) {
+				finalizeProcessing(stockOrder, Status.ROLLBACK);
+				log.info("ROLLBACK: {}", stockOrder);
+			} else {
+				orderProcessingStatus.setStockStatus(ConfirmationStatus.REJECTED);
+				log.info("Stored: {}, {}", stockOrder, orderProcessingStatus);
+			}
+		} else if (stockOrder.getStatus().equals(Status.PARTIALLY_CONFIRMED)) {
+			if (orderProcessingStatus.getPaymentStatus().equals(ConfirmationStatus.CONFIRMED)) {
+				finalizeProcessing(stockOrder, Status.CONFIRMED);
+				log.info("CONFIRMED: {}", stockOrder);
+			} else if (orderProcessingStatus.getPaymentStatus().equals(ConfirmationStatus.REJECTED)) {
+				finalizeProcessing(stockOrder, Status.REJECTED);
+				log.info("ROLLBACK: {}", stockOrder);
+			} else {
+				orderProcessingStatus.setStockStatus(ConfirmationStatus.CONFIRMED);
+				log.info("Stored: {}, {}", stockOrder, orderProcessingStatus);
 			}
 		} else {
 			throw new IllegalArgumentException();

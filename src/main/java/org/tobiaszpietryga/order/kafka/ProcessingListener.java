@@ -53,7 +53,7 @@ public class ProcessingListener {
 				finalizeProcessing(paymentOrder, Status.CONFIRMED);
 				log.info("CONFIRMED: {}", paymentOrder);
 			} else if (orderProcessingStatus.getStockStatus().equals(ConfirmationStatus.REJECTED)) {
-				finalizeProcessing(paymentOrder, Status.REJECTED);
+				finalizeProcessing(paymentOrder, Status.ROLLBACK);
 				log.info("ROLLBACK: {}", paymentOrder);
 			} else {
 				orderProcessingStatus.setPaymentStatus(ConfirmationStatus.CONFIRMED);
@@ -81,7 +81,7 @@ public class ProcessingListener {
 				finalizeProcessing(stockOrder, Status.CONFIRMED);
 				log.info("CONFIRMED: {}", stockOrder);
 			} else if (orderProcessingStatus.getPaymentStatus().equals(ConfirmationStatus.REJECTED)) {
-				finalizeProcessing(stockOrder, Status.REJECTED);
+				finalizeProcessing(stockOrder, Status.ROLLBACK);
 				log.info("ROLLBACK: {}", stockOrder);
 			} else {
 				orderProcessingStatus.setStockStatus(ConfirmationStatus.CONFIRMED);
